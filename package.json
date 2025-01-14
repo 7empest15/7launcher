@@ -6,6 +6,7 @@
   "author": "7empest15",
   "dependencies": {
     "electron-squirrel-startup": "^1.0.1",
+    "electron-store": "^10.0.0",
     "fs": "^0.0.1-security",
     "gamepad.js": "^2.1.0",
     "node-gamepad": "^0.1.15",

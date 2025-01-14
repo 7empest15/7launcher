@@ -220,6 +220,7 @@
           tile.style.border = '2px solid #8a2be2';
           selectedTileId = tileId;
           document.getElementById('info-title').textContent = tile.querySelector('h3').textContent;
+          document.getElementById('info-description').textContent = `Description du jeu ${tileId}`;
           document.getElementById('action-buttons').style.display = 'block';
         } else {
           tile.classList.remove('selected');
@@ -243,6 +244,7 @@
     // Gamepad navigation logic
     const carousel = document.querySelector('.carousel');
     const infoTitle = document.getElementById('info-title');
+    const infoDescription = document.getElementById('info-description');
 
     function updateSelection() {
       navigableElements.forEach((element, index) => {
@@ -251,6 +253,7 @@
           if (element.classList.contains('tile')) {
             carousel.scrollLeft = element.offsetLeft - carousel.offsetLeft - (carousel.clientWidth / 2) + (element.clientWidth / 2);
             infoTitle.textContent = element.querySelector('h3').textContent;
+            infoDescription.textContent = `Description du jeu ${index + 1}`;
             document.getElementById('action-buttons').style.display = 'block';
           }
         } else {
