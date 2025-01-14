@@ -1,0 +1,90 @@
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const { exec } = require('child_process');
+const fs = require('fs');
+
+// Chemin vers le fichier JSON des tuiles
+const tilesFilePath = path.join(__dirname, 'tiles.json');
+
+// Création de la fenêtre principale
+let mainWindow;
+
+app.whenReady().then(() => {
+  mainWindow = new BrowserWindow({
+    width: 1280,
+    height: 720,
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+    },
+    titleBarStyle: 'hidden',
+    title: 'Game Launcher'
+  });
+
+  mainWindow.loadFile('index.html');
+
+  // Envoyer les informations des tuiles à la fenêtre principale
+  mainWindow.webContents.on('did-finish-load', () => {
+    const tiles = JSON.parse(fs.readFileSync(tilesFilePath));
+    mainWindow.webContents.send('load-tiles', tiles);
+  });
+
+  // Gestion des événements lorsque la fenêtre est fermée
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
+});
+
+// Quitter l'application lorsque toutes les fenêtres sont fermées
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
+
+// IPC pour lancer un jeu depuis l'interface
+ipcMain.handle('launch-game', async (event, gamePath) => {
+  if (gamePath.startsWith('steam://') || gamePath.startsWith('fivem://')) {
+    // Utilisez une importation dynamique pour les URL Steam
+    const open = (await import('open')).default;
+    await open(gamePath);
+    console.log(`Jeu lancé : ${gamePath}`);
+  } else {
+    // Utilisez exec pour les chemins de fichiers locaux
+    exec(`"${gamePath}"`, (error) => {
+      if (error) {
+        console.error(`Erreur lors du lancement du jeu : ${error.message}`);
+      } else {
+        console.log(`Jeu lancé : ${gamePath}`);
+      }
+    });
+  }
+});
+
+// IPC pour quitter l'application
+ipcMain.handle('quit-app', () => {
+  app.quit();
+});
+
+// IPC pour ajouter une tuile
+ipcMain.handle('add-tile', (event, tile) => {
+  const tiles = JSON.parse(fs.readFileSync(tilesFilePath));
+  tiles.push(tile);
+  fs.writeFileSync(tilesFilePath, JSON.stringify(tiles, null, 2));
+  mainWindow.webContents.send('load-tiles', tiles);
+});
+
+// IPC pour supprimer une tuile
+ipcMain.handle('delete-tile', (event, tileId) => {
+  let tiles = JSON.parse(fs.readFileSync(tilesFilePath));
+  tiles = tiles.filter(tile => tile.id !== tileId);
+  fs.writeFileSync(tilesFilePath, JSON.stringify(tiles, null, 2));
+  mainWindow.webContents.send('load-tiles', tiles);
+});
+
+// IPC pour modifier une tuile
+ipcMain.handle('edit-tile', (event, updatedTile) => {
+  let tiles = JSON.parse(fs.readFileSync(tilesFilePath));
+  tiles = tiles.map(tile => tile.id === updatedTile.id ? updatedTile : tile);
+  fs.writeFileSync(tilesFilePath, JSON.stringify(tiles, null, 2));
+  mainWindow.webContents.send('load-tiles', tiles);
+});

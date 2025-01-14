@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1736857966649,
+    "name": "BeamNG.drive",
+    "image": "https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/284160/ss_50b8ba7ff80d50af3bd6b1b4e326849555a952a2.1920x1080.jpg",
+    "command": "steam://rungameid/284160"
+  },
+  {
+    "id": 1736858112892,
+    "name": "CounsterStrike 2",
+    "image": "https://shared.cloudflare.steamstatic.com/store_item_assets/steam/apps/730/header.jpg",
+    "command": "steam://rungameid/730"
+  },
+  {
+    "id": 1736858287098,
+    "name": "Urban Pursuit",
+    "image": "https://dbl-static.usercontent.prism.gg/icons/1241496309769310228/a_9a421fad3b09ac368f492fc17552fcbc.png",
+    "command": "fivem://connect/urban.7empest15.fr"
+  }
+]
